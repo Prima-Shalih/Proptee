@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Properties</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <script defer src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script defer src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    table thead th {
+      color: white;
+    }
+    table#property-table tbody tr {
+      color: white;
+    }
+  </style>
+</head>
+
+<body data-bs-spy="scroll" data-bs-target="#navbar-example2" tabindex="0">
+
+  <!-- nav bar start  -->
+
+  <header id="nav" class="site-header position-fixed text-white bg-dark">
+    <nav id="navbar-example2" class="navbar navbar-expand-lg ">
+      <!-- ... (your existing code) ... -->
+    </nav>
+  </header>
+
+  <!-- nav bar end  -->
+
+  <!-- properties section start -->
+
+  <section id="properties" class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="section-heading">Properties</h2>
+      <div>
+        <a href="addproperties.html" class="btn btn-primary me-2">Add Properties</a>
+        <a href="deleteproperties.html" class="btn btn-danger">Remove Properties</a>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table" id="property-table">
+        <thead>
+          <tr>
+            <th>Property ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Address</th>
+            <th>Area</th>
+            <th>Price</th>
+            <th>Bedrooms</th>
+            <th>Bathrooms</th>
+            <th>Agent ID</th>
+            <th>Status</th>
+            <th></th>
+            <!-- Add more attribute columns here -->
+          </tr>
+        </thead>
+        <tbody id="property-list"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- properties section end -->
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async() => {
+      const tableBody = $('#property-table tbody');
+
+      try {
+        const response = await axios.get('/pt/showproperties');
+        console.log(response); // Log the response to inspect its structure
+
+        // Handle the successful response here
+        if (response.data.message === 'Property Found') {
+          const properties = response.data.showProperties;
+          properties.forEach(function(property) {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${property.property_id}</td>
+              <td>${property.nama}</td>
+              <td>${property.description}</td>
+              <td>${property.alamat}</td>
+              <td>${property.luas}</td>
+              <td>${property.harga}</td>
+              <td>${property.jumlah_kamar}</td>
+              <td>${property.jumlah_kamar_mandi}</td>
+              <td>${property.agent_id}</td>
+              <td>${property.status}</td>
+              <td><button class="btn btn-primary" onclick="redirectToPayment(${property.property_id})">I want this</button></td>
+            `;
+            tableBody.append(row);
+          });
+          // Initialize DataTables plugin
+          $("#property-table").DataTable();
+        } else {
+          // Show error message to the user
+          console.error(response.data.message);
+        }
+      } catch (error) {
+        console.error(error);
+        // Handle error here (e.g., show error message to the user)
+      }
+    });
+
+    function redirectToPayment(propertyId) {
+      // Perform the desired action when the button is clicked
+      console.log(`Redirecting to payment for Property ID: ${propertyId}`);
+      // You can add your logic here to handle the redirect to payment.html
+      window.location.href = `payment.html?propertyId=${propertyId}`;
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+    integrity="sha384-r+fAUIWqlquh+0Z5mtbT9vzzzXGcn1Bb0Q3lTwetUQZmxtBlddFaj1WyCOopzKnF" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-jzk2xxA6+tSd1D9+Z5ZGgCzP6/yj17XbATccrlIZjAn+V7Lfdz0kIeTcsNu8Qbmd" crossorigin="anonymous"></script>
+</body>
+
+</html>
